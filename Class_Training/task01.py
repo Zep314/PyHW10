@@ -16,30 +16,53 @@
 # Задачу можно усложнить, реализовав проверку порядка режимов. При его нарушении
 # выводить соответствующее сообщение и завершать скрипт.
 import sys
+import time
 
 class TrafficLight:
-    mode = None
+    _mode = None
+    _color = None
     def __init__(self):
-        self.mode = 'Red'
+        self._mode = 'Red'
+        self._color = 'Red'
 
     def NextStep(self):
-        if self.mode == 'Red': self.mode = 'YellowRed'
-        elif self.mode == 'YellowRed': self.mode = 'Green'
-        elif self.mode == 'Green': self.mode = 'BlinkGreen'
-        elif self.mode == 'BlinkGreen': self.mode = 'YellowGreen'
-        elif self.mode == 'YellowGreen': self.mode = 'Red'
+        if self._mode == 'Red':
+            self._mode = 'YellowRed'
+            self._color = 'Yellow'
+        elif self._mode == 'YellowRed':
+            self._mode = 'Green'
+            self._color = 'Green'
+        elif self._mode == 'Green':
+            self._mode = 'BlinkGreen'
+            self._color = 'Green'
+        elif self._mode == 'BlinkGreen':
+            self._mode = 'YellowGreen'
+            self._color = 'Yellow'
+        elif self._mode == 'YellowGreen':
+            self._mode = 'Red'
+            self._color = 'Red'
         else:
             print("Чтото пошло не так...")
             sys.exit(-1)
 
     def RedLight(self):
-        return True if self.mode in ['Red','YellowRed'] else False
+        return True if self._mode in ['Red','YellowRed'] else False
 
     def YellowLight(self):
-        return True if self.mode in ['YellowRed','YellowGreen'] else False
+        return True if self._mode in ['YellowRed','YellowGreen'] else False
 
     def GreenLight(self):
-        return True if self.mode in ['Green','BlinkGreen'] else False
+        return True if self._mode in ['Green','BlinkGreen'] else False
+
+    def get_color(self):
+        return self._color
 
     def running(self):
-        pass
+        while True:
+            for i in [7, 2, 5, 2, 2]:
+                print(self._mode)
+                time.sleep(i)
+                self.NextStep()
+
+TL = TrafficLight()
+TL.running()
