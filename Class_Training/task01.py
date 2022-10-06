@@ -17,52 +17,82 @@
 # выводить соответствующее сообщение и завершать скрипт.
 import sys
 import time
+from colorama import Fore # цветная печать в консоли и перемещение курсора
+import colorama
 
 class TrafficLight:
-    _mode = None
-    _color = None
-    def __init__(self):
-        self._mode = 'Red'
+    _mode = None   # режим работы
+    _color = None  # текущий цвет
+    _fps = 0       # частота обновления на экране
+
+    def __init__(self,fps = 2):
+        self._mode = 'Red'  # начинаем с красного
         self._color = 'Red'
+        self._fps = fps     # 2 кадра в секунду, если что
+        print('\n' * 50)
 
-    def NextStep(self):
-        if self._mode == 'Red':
-            self._mode = 'YellowRed'
-            self._color = 'Yellow'
-        elif self._mode == 'YellowRed':
-            self._mode = 'Green'
-            self._color = 'Green'
-        elif self._mode == 'Green':
-            self._mode = 'BlinkGreen'
-            self._color = 'Green'
-        elif self._mode == 'BlinkGreen':
-            self._mode = 'YellowGreen'
-            self._color = 'Yellow'
-        elif self._mode == 'YellowGreen':
-            self._mode = 'Red'
-            self._color = 'Red'
-        else:
-            print("Чтото пошло не так...")
-            sys.exit(-1)
+    def NextStep(self):   # логика переключения режимов
+        match self._mode:
+            case 'Red':
+                self._mode = 'YellowRed'
+                self._color = 'Yellow'
+            case 'YellowRed':
+                self._mode = 'Green'
+                self._color = 'Green'
+            case 'Green':
+                self._mode = 'BlinkGreen'
+                self._color = 'Green'
+            case 'BlinkGreen':
+                self._mode = 'YellowGreen'
+                self._color = 'Yellow'
+            case 'YellowGreen':
+                self._mode = 'Red'
+                self._color = 'Red'
+            case _:
+                print("Чтото пошло не так...")
+                sys.exit(-1)
 
-    def RedLight(self):
+    def RedLight(self): # красный глаз светофора
         return True if self._mode in ['Red','YellowRed'] else False
 
-    def YellowLight(self):
+    def YellowLight(self): # желтый глаз светофора
         return True if self._mode in ['YellowRed','YellowGreen'] else False
 
-    def GreenLight(self):
+    def GreenLight(self): # зеленый глаз светофора
         return True if self._mode in ['Green','BlinkGreen'] else False
 
-    def get_color(self):
+    def get_color(self): # геттер
         return self._color
 
-    def running(self):
-        while True:
-            for i in [7, 2, 5, 2, 2]:
-                print(self._mode)
-                time.sleep(i)
+    def print_TL(self,GreenLight = True): # вывод на экран светофора
+
+        pos = lambda y, x: colorama.Cursor.POS(x, y)
+
+        print('%s %s' % (pos(1,1), ' ')) # рисуем с этой позиции
+        print('+-+')
+        print(f'|{Fore.RED + ("*" if self.RedLight() else " ") + Fore.WHITE}|')
+        print('+-+')
+        print(f'|{Fore.YELLOW + ("*" if self.YellowLight() else " ") + Fore.WHITE}|')
+        print('+-+')
+        if (self._mode == 'Green') or (self._mode == 'BlinkGreen' and GreenLight == True):
+            print('|'+Fore.GREEN+'*'+Fore.WHITE+'|')
+        else:
+            print('| |')
+        print('+-+')
+
+    def running(self): # запуск и главный цикл
+        colorama.init()
+        for _ in range(10): # 10 циклов пройдем. и хватит
+            for i in [7, 2, 5, 2, 2]: # тайминги между переключениями режимов
+                j = 0
+                blink = False
+                while j < i:
+                    self.print_TL(blink)
+                    time.sleep(1 / self._fps)
+                    j += 1 / self._fps
+                    blink = not blink
                 self.NextStep()
 
 TL = TrafficLight()
 TL.running()
+

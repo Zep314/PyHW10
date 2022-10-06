@@ -11,7 +11,7 @@
 #   проверить работу метода.
 # Например: 20 м*5000 м*25 кг*5 см = 12500 т.
 
-class Road:
+class Road:  # объявляем класс
     _length = None
     _width = None
 
@@ -19,13 +19,12 @@ class Road:
         self._width = width
         self._length = length
 
-    def get_length(self):
+    def get_length(self):  # геттер
         return self._length
-    def get_width(self):
+    def get_width(self):  # геттер
         return self._width
 
-
-    def calc_mass(self,mass_sqmeter,thinkness):
+    def calc_mass(self,mass_sqmeter,thinkness): # метод расчета
         return self._length*self._width*mass_sqmeter*thinkness / 1000
 
 my_road = Road(5000,20)
